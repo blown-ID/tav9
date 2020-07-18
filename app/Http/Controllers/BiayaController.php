@@ -39,18 +39,18 @@ class BiayaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function buat(Request $request)
+    public function buat(Request $request, $id)
     {
-        try {
-            $id = decrypt($request->auth_tokens);
-        } catch (DecryptException $e) {
-            return redirect()->back()->with('errors', 'Invalid User Tokens!');
-        }
-        $judul = "Pembuatan Nota";
         $data_user = User::where('id_user', $id)->first();
-        $rolenya = Role::where('id', $data_user->role_id)->first();
-        $role_name = $rolenya->name;
-        return view('biaya.buat', compact('judul', 'data_user', 'role_name'));
+        if (!$data_user) {
+            return redirect()->back()->with('warning', 'Invalid Request');
+        } else {
+            // $id = $request->auth_tokens;
+            $judul = "Pembuatan Nota";
+            $rolenya = Role::where('id', $data_user->role_id)->first();
+            $role_name = $rolenya->name;
+            return view('biaya.buat', compact('judul', 'data_user', 'role_name'));
+        }
     }
 
     /**
@@ -61,44 +61,56 @@ class BiayaController extends Controller
      */
     public function store(Request $request)
     {
-        // data dari fun buat disimpan disini nantinya
-        try {
-            $id_user = Crypt::decrypt($request->student_token);
-        } catch (DecryptException $e) {
-            return redirect()->route('biaya.index')->with('errors', 'Invalid Student Token!');
-        };
-        $get_user = User::where('id_user', $id_user)->first();
-        $nama_role = Role::where('id', $get_user->role_id)->first();
-        $setting = Setting::first();
-        // dd($setting);
-        $AWAL = date('Y') . "-";
-        $getLatestID = DB::table('payment')
-            ->select('id_payment')
-            ->orderByDesc('id_payment')
-            ->first();
-        // dd($getLatestID);
-        $noUrutAkhir = $getLatestID->id_payment ?? '';
-        $no = 1;
-        if ($noUrutAkhir) {
-            $id_invoice = "$AWAL" . sprintf("%05s", abs($noUrutAkhir + 1));
+        $id_user = $request->student_token;
+        if ($request->hasFile('bukti')) {
+            // kalo upload gambar
+            $this->validate($request, [
+                // cek validasi gambar
+                'note' => 'required',
+                'date' => 'required',
+                'from_rek' => 'required',
+                'from_name' => 'required',
+                'from_bank_name' => 'required',
+                'bukti' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            ]);
+            $namaFile = 'img_' . time() . '.' . $request->bukti->getClientOriginalExtension();
+            $request->file('bukti')->move(public_path() . '/assets/images/bukti_transfer/', $namaFile);
+            $get_user = User::where('id_user', $id_user)->first();
+            $nama_role = Role::where('id', $get_user->role_id)->first();
+            $setting = Setting::first();
+            $AWAL = date('Y') . "-";
+            $getLatestID = DB::table('payment')
+                ->select('id_payment')
+                ->orderByDesc('id_payment')
+                ->first();
+            // dd($getLatestID);
+            $noUrutAkhir = $getLatestID->id_payment ?? '';
+            $no = 1;
+            if ($noUrutAkhir) {
+                $id_invoice = "$AWAL" . sprintf("%05s", abs($noUrutAkhir + 1));
+            } else {
+                $id_invoice = "$AWAL" . sprintf("%05s", $no);
+            };
+            // dd($id_user);
+            Payments::create([
+                'id_siswa' => $id_user,
+                'id_invoice' => $id_invoice,
+                'nama_siswa' => $get_user->nama,
+                'role_siswa' => $nama_role->name,
+                'note' => $request->note,
+                'date' => date('Y-m-d'),
+                'from_rek' => $request->from_rek,
+                'from_name' => $request->from_name,
+                'from_bank_name' => $request->from_bank_name,
+                'verified' => 1,
+                'verified_by' => Auth::user()->nama,
+                'bukti' => $namaFile,
+            ]);
+            $get_id_baru = Payments::where('id_siswa', $id_user)->orderByDesc('id_payment')->first();
+            return redirect("/biaya/$get_id_baru->id_payment/edit")->with('success', 'Silahkan Mengisi Detail Pembayaran!');
         } else {
-            $id_invoice = "$AWAL" . sprintf("%05s", $no);
-        };
-        // dd($id_user);
-        Payments::create([
-            'id_siswa' => $id_user,
-            'id_invoice' => $id_invoice,
-            'nama_siswa' => $get_user->nama,
-            'role_siswa' => $nama_role->name,
-            'note' => $request->note,
-            'date' => date('Y-m-d'),
-            'from_rek' => $request->from_rek,
-            'from_name' => $request->from_name,
-            'from_bank_name' => $request->from_bank_name,
-            'verified_by' => Auth::user()->nama,
-        ]);
-        $get_id_baru = Payments::where('id_siswa', $id_user)->orderByDesc('id_payment')->first();
-        return redirect("/biaya/$get_id_baru->id_payment/edit")->with('success', 'Silahkan Mengisi Detail Pembayaran!');
+            return redirect()->route('biaya.index')->with('warning', 'Bukti Pembayaran Harus Valid!');
+        }
     }
 
     /**
@@ -122,7 +134,9 @@ class BiayaController extends Controller
     {
         // $payment = DB::select('SELECT * FROM payment LEFT JOIN payment_detail ON payment.id_payment = payment_detail.id_payment LEFT JOIN users ON payment.id_siswa = users.id_user LEFT JOIN detail_siswa ON detail_siswa.id_siswa = payment.id_siswa LEFT JOIN item ON item.id_item = payment_detail.id_item', [1]);
         $payment_detail = DB::select("SELECT * FROM payment_detail LEFT JOIN item ON item.id_item = payment_detail.id_item WHERE id_payment = $id", [1]);
+        // dd($payment_detail);
         $payment = Payments::where('id_payment', $id)->first();
+        // dd($payment);
         $id_user = $payment->id_siswa;
         $user = User::where('id_user', $id_user)->first();
         if (!$user) {
@@ -184,8 +198,9 @@ class BiayaController extends Controller
         if ($detail_item->id_jenjang !== $siswa->role_id) {
             return redirect()->back()->with('errors', '403 Invalid Request');
         } else {
+            // dd($payment);
             $item_payment = Payment_detail::firstOrCreate(
-                ['id_item' => $detail_item->id_item],
+                ['id_item' => $request->detail_bayar, 'id_payment' => $payment->id_payment],
                 [
                     'id_payment' => $payment->id_payment,
                     'id_item' => $detail_item->id_item,

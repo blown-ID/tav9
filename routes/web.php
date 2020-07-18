@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('rincian_biaya', 'HomeController@rincian_biaya')->name('rincian_biaya');
             Route::get('avatar', 'AvatarController@index')->name('avatar');
             Route::post('avatar', 'AvatarController@store')->name('avatar.store');
+            Route::resource('pembayaransiswa', 'PembayaranSiswaController')->except('show', 'edit', 'update', 'destroy');
         }); // end route prefix SMP
 
         Route::group(['middleware' => ['role:Super Admin']], function () {
@@ -48,10 +49,10 @@ Route::group(['middleware' => 'auth'], function () {
         }); // end route prefix SuperAdmin
 
         Route::group(['middleware' => ['role:Super Admin|Admin Keuangan']], function () {
+            Route::get('biaya/buat/{id}', 'BiayaController@buat')->name('biaya.buat');
             Route::resource('biaya', 'BiayaController');
             Route::get('biaya/print/{id}', 'BiayaController@print')->name('biaya.print');
             Route::post('biaya/printpayment/', 'BiayaController@printpayment')->name('biaya.printpayment');
-            Route::post('biaya/buat/', 'BiayaController@buat')->name('biaya.buat');
             Route::post('biaya/tambah_detail/{id}', 'BiayaController@tambah_detail')->name('biaya.tambah_detail');
             Route::delete('biaya/delete_detail/{id}', 'BiayaController@delete_detail')->name('biaya.delete_detail');
         });

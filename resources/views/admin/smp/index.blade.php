@@ -59,12 +59,8 @@
             <td>{{ $status_lulus }}</td>
             <td>
                 @hasanyrole('Super Admin|Admin Keuangan')
-                <form action="{{ route('biaya.buat') }}" method="post">
-                    @csrf
-                    <input type="hidden" name="auth_tokens" id="auth_tokens"
-                        value="{{ Crypt::encrypt($user->id_user) }}">
-                    <button type="submit" class="btn btn-success d-inline btn-xs">Buat Invoice</button>
-                </form>
+                <a href="{{ route('biaya.buat', ['id'=>$user->id_user]) }}" class="badge badge-success">Buat
+                    Invoice</a>
                 @endhasanyrole
                 @unlessrole('Admin - Keuangan')
                 <a href="{{ route('mgtSMP.show', ['mgtSMP'=>$user->id_user]) }}" class="badge badge-primary">Detail</a>

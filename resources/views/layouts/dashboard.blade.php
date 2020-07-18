@@ -179,6 +179,15 @@ $notadmin = Role::where('name', 'not like', "%Admin%")->get();
                                 <p>Rincian Biaya</p>
                             </a>
                         </li>
+                        @if (1 == 1)
+                        <li class="nav-item">
+                            <a class="nav-link @if($judul === 'Pembayaran') active @endif"
+                                href="{{ route('pembayaransiswa.index') }}">
+                                <i class="nav-icon fas fa-clipboard-check"></i>
+                                <p>Data Pembayaran</p>
+                            </a>
+                        </li>
+                        @endif
                         @endrole
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-toggle="modal" data-target="#keluar">
