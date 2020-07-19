@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Payments;
+use Illuminate\Support\Facades\DB;
 use App\Detail_Siswa;
 use App\Gelombang;
 use App\Item;
@@ -69,6 +71,59 @@ class HomeController extends Controller
             return redirect(route('home'));
         } else {
             return view('auth.payment');
+        }
+    }
+
+    public function submitpayment(Request $request)
+    {
+        // dd($request->all());
+        $id_user = Auth::user()->id_user;
+        if ($request->hasFile('bukti')) {
+            // kalo upload gambar
+            $this->validate($request, [
+                // cek validasi gambar
+                'note' => 'required',
+                'tanggal' => 'required',
+                'no_rek' => 'required',
+                'from_name' => 'required',
+                'from_bank_name' => 'required',
+                'bukti' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            ]);
+            $namaFile = 'img_' . time() . '.' . $request->bukti->getClientOriginalExtension();
+            $request->file('bukti')->move(public_path() . '/assets/images/bukti_transfer/', $namaFile);
+            $get_user = User::where('id_user', $id_user)->first();
+            $nama_role = Role::where('id', $get_user->role_id)->first();
+            $setting = Setting::first();
+            $AWAL = date('Y') . "-";
+            $getLatestID = DB::table('payment')
+                ->select('id_payment')
+                ->orderByDesc('id_payment')
+                ->first();
+            // dd($getLatestID);
+            $noUrutAkhir = $getLatestID->id_payment ?? '';
+            $no = 1;
+            if ($noUrutAkhir) {
+                $id_invoice = "$AWAL" . sprintf("%05s", abs($noUrutAkhir + 1));
+            } else {
+                $id_invoice = "$AWAL" . sprintf("%05s", $no);
+            };
+            // dd($id_user);
+            Payments::create([
+                'id_siswa' => $id_user,
+                'id_invoice' => $id_invoice,
+                'nama_siswa' => $get_user->nama,
+                'role_siswa' => $nama_role->name,
+                'note' => "Formulir " . $request->note,
+                'date' => $request->tanggal,
+                'from_rek' => $request->no_rek,
+                'from_name' => $request->from_name,
+                'from_bank_name' => $request->from_bank_name,
+                'verified' => 0,
+                'bukti' => $namaFile,
+            ]);
+            return redirect()->back()->with('success', 'Harap Menunggu Konfirmasi Admin!');
+        } else {
+            return redirect()->route('biaya.index')->with('warning', 'Bukti Pembayaran Harus Valid!');
         }
     }
 

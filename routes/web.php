@@ -17,6 +17,7 @@ Route::get('/clear-cache', function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/payment', 'HomeController@payment')->name('payment');
+    Route::post('/payment/submit', 'HomeController@submitpayment')->name('payment.submit');
 
     Route::group(['middleware' => 'cekPayment'], function () {
         // Kalo udah bayar

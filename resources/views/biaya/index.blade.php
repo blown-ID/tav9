@@ -23,7 +23,7 @@
                     <td>{{ $payment->nama_siswa }} ({{ $payment->role_siswa }})</td>
                     <td>{{ date('d F Y', strtotime($payment->date)) }}</td>
                     <td>{{ $payment->note }}</td>
-                    <td>{{ $payment->verified_by }}</td>
+                    <td>@if($payment->verified_by){{ $payment->verified_by }}@else Belum Divalidasi @endif</td>
                     <td>
                         <a href="{{ route('biaya.print', ['id'=>$payment->id_payment]) }}"
                             class="badge bg-purple">Print</a>

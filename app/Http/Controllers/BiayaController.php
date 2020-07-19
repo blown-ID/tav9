@@ -28,7 +28,7 @@ class BiayaController extends Controller
     public function index()
     {
         // SELECT * FROM payment LEFT JOIN payment_detail ON payment.id_payment = payment_detail.id_payment left JOIN detail_siswa ON detail_siswa.id_siswa = payment.id_siswa LEFT JOIN item ON item.id_item = payment_detail.id_item
-        $payment = DB::select('SELECT * FROM payment LEFT JOIN detail_siswa ON detail_siswa.id_siswa = payment.id_siswa', [1]);
+        $payment = DB::select('SELECT * FROM payment LEFT JOIN detail_siswa ON detail_siswa.id_siswa = payment.id_siswa ORDER BY payment.verified asc', [1]);
         // dd($payment);
         $judul = "Pembuatan Nota";
         return view('biaya.index', compact('judul', 'payment'));
