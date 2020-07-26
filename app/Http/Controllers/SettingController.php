@@ -75,9 +75,12 @@ class SettingController extends Controller
     {
         Gelombang::where('active', 1)
             ->update(['active' => 0]);
-        Gelombang::where('nama_gelombang', $id)
+        Gelombang::where('id_gelombang', $id)
             ->update(['active' => 1]);
-        return redirect(route('settings.index'))->with('success', 'Status Gelombang Aktif Berhasil Diubah!');
+        if ($id == 1) {
+            return redirect(route('settings.index'))->with('info', 'Pendaftaran Berhasil Ditutup. Sekarang Calon Peserta Didik Tidak Dapat Mendaftar Kedalam Sistem.');
+        }
+        return redirect(route('settings.index'))->with('success', 'Status Gelombang Aktif Berhasil Diubah! Silahkan Perbaharui Biaya Pendaftaran Jika Dibutuhkan.');
     }
 
     /**
@@ -98,6 +101,7 @@ class SettingController extends Controller
                 'cp_smp' => $request->cp_smp,
                 'cp_sma' => $request->cp_sma,
                 'cp_smk' => $request->cp_smk,
+                'cp_keuangan' => $request->cp_keuangan,
                 'active' => $request->active,
                 'alamat_sekolah' => $request->alamat_sekolah,
                 'telp_sekolah' => $request->telp_sekolah,
@@ -121,6 +125,7 @@ class SettingController extends Controller
             'cp_smp' => 'required|string|max:50',
             'cp_sma' => 'required|string|max:50',
             'cp_smk' => 'required|string|max:50',
+            'cp_keuangan' => 'required|string|max:50',
         ], $messages);
 
         Setting::where('id_settings', $id)
@@ -131,6 +136,7 @@ class SettingController extends Controller
                 'cp_smp' => $request->cp_smp,
                 'cp_sma' => $request->cp_sma,
                 'cp_smk' => $request->cp_smk,
+                'cp_keuangan' => $request->cp_keuangan,
             ]);
         return redirect(route('settings.index'))->with('success', 'Pengaturan Berhasil Diubah!');
     }

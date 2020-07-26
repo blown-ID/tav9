@@ -198,7 +198,8 @@ $item = Item::where('id_jenjang', Auth::user()->role_id)->where('nama_item', 'Fo
                         <div class="form-group">
                             <label for="note">Keterangan<span class="text-danger">*</span></label>
                             <input type="textarea" class="form-control" rows="3" id="note" name="note"
-                                placeholder="Contoh: Pembayaran Biaya Formulir {{ Auth::user()->nama }}">
+                                placeholder="Contoh: Pembayaran Biaya Formulir {{ Auth::user()->nama }}"
+                                value="Pembayaran Biaya Formulir Pendaftaran {{ Auth::user()->nama }}">
                             @error('note')
                             <small class="form-text text-muted text-danger">{{ $message }}</small>
                             @enderror

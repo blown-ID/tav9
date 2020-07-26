@@ -21,6 +21,8 @@ $notadmin = Role::where('name', 'not like', "%Admin%")->get();
     <link rel="stylesheet" href="{{ asset('assets') }}/themes/dist/css/themes.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/css/sweetalert.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/themes/plugins/jquery-ui/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ asset('assets') }}/css/my.css">
+    <link rel="stylesheet" href="{{ asset('assets') }}/themes/plugins/ekko-lightbox/ekko-lightbox.css">
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -103,7 +105,7 @@ $notadmin = Role::where('name', 'not like', "%Admin%")->get();
                         </li>
                         @endhasrole
 
-                        @hasanyrole('Admin SMP|Super Admin')
+                        @hasanyrole('Admin SMP|Super Admin|Admin Keuangan')
                         <li class="nav-item">
                             <a class="nav-link @if($judul === 'Manajemen Siswa SMP') active @endif"
                                 href="{{ route('mgtSMP.index') }}">
@@ -112,7 +114,7 @@ $notadmin = Role::where('name', 'not like', "%Admin%")->get();
                             </a>
                         </li>
                         @endhasanyrole
-                        @hasrole('Admin SMA|Super Admin')
+                        @hasrole('Admin SMA|Super Admin|Admin Keuangan')
                         {{-- bukan(bukanAdmin) = Admin --}}
                         <li class="nav-item">
                             <a class="nav-link @if($judul === 'Manajemen Siswa SMA') active @endif"
@@ -122,7 +124,7 @@ $notadmin = Role::where('name', 'not like', "%Admin%")->get();
                             </a>
                         </li>
                         @endhasrole
-                        @hasrole('Admin SMK|Super Admin')
+                        @hasrole('Admin SMK|Super Admin|Admin Keuangan')
                         {{-- bukan(bukanAdmin) = Admin --}}
                         <li class="nav-item">
                             <a class="nav-link @if($judul === 'Manajemen Siswa SMK') active @endif"
@@ -181,7 +183,7 @@ $notadmin = Role::where('name', 'not like', "%Admin%")->get();
                         </li>
                         @if (1 == 1)
                         <li class="nav-item">
-                            <a class="nav-link @if($judul === 'Pembayaran') active @endif"
+                            <a class="nav-link @if($judul === 'Data Pembayaran') active @endif"
                                 href="{{ route('pembayaransiswa.index') }}">
                                 <i class="nav-icon fas fa-clipboard-check"></i>
                                 <p>Data Pembayaran</p>
@@ -267,6 +269,7 @@ $notadmin = Role::where('name', 'not like', "%Admin%")->get();
     <script src="{{ asset('assets') }}/themes/dist/js/themes.min.js"></script>
     <script src="{{ asset('assets') }}/themes/dist/js/demo.js"></script>
     <script src="{{ asset('assets') }}/themes/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script src="{{ asset('assets') }}/themes/plugins/ekko-lightbox/ekko-lightbox.min.js"></script>
     <script src="{{ asset('assets') }}/js/sweetalert.min.js"></script>
     @include('sweet::alert')
     @yield('js')

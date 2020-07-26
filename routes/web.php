@@ -36,6 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('avatar', 'AvatarController@index')->name('avatar');
             Route::post('avatar', 'AvatarController@store')->name('avatar.store');
             Route::resource('pembayaransiswa', 'PembayaranSiswaController')->except('show', 'edit', 'update', 'destroy');
+            Route::post('printinvoice/{id}', 'PembayaranSiswaController@print')->name('pembayaransiswa.print');
         }); // end route prefix SMP
 
         Route::group(['middleware' => ['role:Super Admin']], function () {
@@ -47,19 +48,22 @@ Route::group(['middleware' => 'auth'], function () {
             Route::put('updatepengaturan/{id}', 'SettingController@updatepengaturan')->name('updatepengaturan');
             Route::resource('role', 'RoleController')->except('edit', 'update', 'show');
             Route::resource('admin', 'AdminController')->except('edit', 'show', 'create');
+            Route::get('/laporan-is-completed', 'HomeController@laporan_is_completed')->name('laporan_is_completed');
         }); // end route prefix SuperAdmin
 
         Route::group(['middleware' => ['role:Super Admin|Admin Keuangan']], function () {
             Route::get('biaya/buat/{id}', 'BiayaController@buat')->name('biaya.buat');
+            Route::get('biaya/validatePayment/{biaya}', 'BiayaController@validatePayment')->name('biaya.validatePayment');
             Route::resource('biaya', 'BiayaController');
             Route::get('biaya/print/{id}', 'BiayaController@print')->name('biaya.print');
             Route::post('biaya/printpayment/', 'BiayaController@printpayment')->name('biaya.printpayment');
             Route::post('biaya/tambah_detail/{id}', 'BiayaController@tambah_detail')->name('biaya.tambah_detail');
             Route::delete('biaya/delete_detail/{id}', 'BiayaController@delete_detail')->name('biaya.delete_detail');
+            Route::get('/laporan-pembayaran', 'BiayaController@laporan_pembayaran')->name('biaya.laporan_pembayaran');
         });
         Route::group(['middleware' => ['role:Super Admin|Admin SMP']], function () {
             // start superadmin x Admin SMP only
-            Route::resource('mgtSMP', 'ManagementSMP')->except('store', 'create',);
+            Route::resource('mgtSMP', 'ManagementSMP')->except('store', 'create');
             Route::get('editparentsSMP/{id}', 'ManagementSMP@editparents')->name('mgtSMP.editparents');
             Route::post('bayarformulirSMP/{id}', 'ManagementSMP@bayarformulir')->name('mgtSMP.bayarformulir');
             Route::post('updateparentsSMP/{id}', 'ManagementSMP@updateparents')->name('mgtSMP.updateparents');
@@ -76,6 +80,12 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('updatepasswordSMA/{id}', 'ManagementSMA@updatepassword')->name('mgtSMA.updatepassword');
             Route::post('printkartuSMA/{id}', 'ManagementSMA@printkartu')->name('mgtSMA.printkartu');
             Route::post('updatenilaiSMA/{id}', 'ManagementSMA@updatenilai')->name('mgtSMA.updatenilai');
+        }); // end route prefix SuperAdmin
+        Route::group(['middleware' => ['role:Super Admin|Admin SMP|Admin Keuangan']], function () {
+            Route::get('mgtSMP', 'ManagementSMP@index')->name('mgtSMP.index');
+        }); // end route prefix SuperAdmin
+        Route::group(['middleware' => ['role:Super Admin|Admin SMA|Admin Keuangan']], function () {
+            Route::get('mgtSMA', 'ManagementSMA@index')->name('mgtSMA.index');
         }); // end route prefix SuperAdmin
     }); // end checkpayment
 }); // end auth

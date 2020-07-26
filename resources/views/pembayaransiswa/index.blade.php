@@ -1,6 +1,15 @@
 @extends('layouts.dashboard')
 @section('konten')
+@if (Auth::user()->is_lulus === 1)
+<div class="alert alert-primary">
+    <h5><i class="icon fas fa-info"></i> Informasi!</h5>
+    <span>Setelah mengupload bukti transfer harap memberikan informasi kepada admin keuangan <a target="_blank"
+            href="https://wa.me/62{{ $setting->cp_smk }}?text=Assalamu'alaikum, saya ingin konfirmasi pembayaran atas nama {{ Auth::user()->nama }} dengan bukti pembayaran sebagai berikut:"
+            class="btn btn-info">disini</a></span>
+</div>
+@endif
 <div class="row">
+    @if (Auth::user()->is_lulus === 1)
     <div class="col-md-4 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
@@ -13,7 +22,8 @@
                         <div class="form-group">
                             <label for="tanggal">Tanggal Transfer</label>
                             <input type="date" class="form-control @error('tanggal') is-invalid @enderror"
-                                placeholder="Masukkan tanggal Admin" name="tanggal" value="{{ old('tanggal') }}">
+                                placeholder="Masukkan tanggal Admin" name="tanggal"
+                                value="{{ old('tanggal') ?? date('Y-m-d') }}">
                             @error('tanggal')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -77,12 +87,13 @@
             </div>
         </div>
     </div>
-    <div class="col-md-8 grid-margin stretch-card">
+    @endif
+    <div class="@if(Auth::user()->is_lulus === 1) col-md-8 @else col-md-12 @endif grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">List Pembayaran Saya</h4>
                 <br>
-                <table class="mt-2 table table-bordered table-striped">
+                <table id="tabel-pembayaran" class="mt-2 table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th scope="col">No.</th>
@@ -91,7 +102,7 @@
                             <th scope="col">No. Rek</th>
                             <th scope="col">Note</th>
                             <th scope="col">Status</th>
-                            <th scope="col">Aksi</th>
+                            <th scope="col">Bukti Transfer</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -104,11 +115,11 @@
                             <td>{{ $item->note }}</td>
                             <td>@if($item->verified == 1) Diterima @else Menunggu @endif</td>
                             <td>
-                                <form action="" method="POST" class="form-delete" id="form-delete">
-                                    @method('delete')
-                                    @csrf
-                                    <button type="submit" class="badge badge-danger">Hapus</button>
-                                </form>
+                                <a href="{{ asset('assets/images/bukti_transfer/') }}/{{ $item->bukti }}"
+                                    data-toggle="lightbox" data-gallery="gallery">
+                                    <img src="{{ asset('assets/images/bukti_transfer/') }}/{{ $item->bukti }}"
+                                        class="imggallery">
+                                </a>
                             </td>
                         </tr>
                         @empty
@@ -124,26 +135,7 @@
 </div>
 @endsection
 @section('js')
-<script>
-    $('.form-delete').on('submit', function(e){
-            var form = this;
-            e.preventDefault();
-
-            swal({
-                title: "Apakah Anda Yakin?",
-                text: "Data yang akan dihapus tidak bisa dikembalikan!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                })
-                .then((willDelete) => {
-                if (willDelete) {
-                    return form.submit();
-                } 
-            });
-        });
-</script>
-
+@if (Auth::user()->is_lulus === 1)
 <script>
     $(".custom-file-input").on("change", function() {
     let fileName = $(this)
@@ -155,5 +147,25 @@
         .addClass("selected")
         .html(fileName);
 });
+</script>
+@endif
+<script>
+    $(document).on("click", '[data-toggle="lightbox"]', function(event){
+      event.preventDefault();
+      $(this).ekkoLightbox();
+    });
+</script>
+<script>
+    $(function () {
+        $('#tabel-pembayaran').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+      });
+    });
 </script>
 @endsection

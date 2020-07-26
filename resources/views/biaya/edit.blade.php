@@ -54,6 +54,16 @@
                             <td>:</td>
                             <td>{{ $setting->telp_sekolah }}</td>
                         </tr>
+                        <tr>
+                            <td>Bukti Pembayaran</td>
+                            <td>:</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                    data-target="#bukti-transfer">
+                                    Lihat
+                                </button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -122,13 +132,23 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="bukti-transfer" tabindex="-1" role="dialog" aria-labelledby="bukti-transferLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <img width="350px" src="{{ asset('assets/images/bukti_transfer/') }}/{{ $payment->bukti }}">
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('js')
 <script>
     $('.form-delete').on('submit', function(e){
             var form = this;
             e.preventDefault();
-
             swal({
                 title: "Apakah Anda Yakin?",
                 text: "Data yang akan dihapus tidak bisa dikembalikan!",

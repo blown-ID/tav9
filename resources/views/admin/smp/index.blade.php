@@ -45,14 +45,6 @@
                 Sudah
                 @else
                 <span>Belum</span>
-                <form action="{{ route('mgtSMP.bayarformulir', ['id'=>$user->id_user]) }}" method="POST">
-                    @php
-                    $confirm_msg="Apakah Anda Yakin Sudah Mengkonfirmasi Pembayaran Untuk $user->nama?" ; @endphp
-                    @csrf
-                    <button type="submit" onclick='return confirm("{{$confirm_msg}}")'
-                        class="btn bg-lightblue btn-xs">Ubah
-                        Status Bayar</button>
-                </form>
                 @endif
             </td>
             {{-- <td>{{ $status_bayar }}</td> --}}
@@ -62,7 +54,7 @@
                 <a href="{{ route('biaya.buat', ['id'=>$user->id_user]) }}" class="badge badge-success">Buat
                     Invoice</a>
                 @endhasanyrole
-                @unlessrole('Admin - Keuangan')
+                @unlessrole('Admin Keuangan')
                 <a href="{{ route('mgtSMP.show', ['mgtSMP'=>$user->id_user]) }}" class="badge badge-primary">Detail</a>
                 <form action="{{ route('mgtSMP.destroy', ['mgtSMP'=>$user->id_user]) }}" method="POST"
                     class="form-delete d-inline" id="form-delete">
@@ -106,21 +98,24 @@
                     return form.submit();
                 } 
             });
-
-            // swal({
-            //     title: 'Apa anda yakin ingin menghapus siswa ?',
-            //     text: "Data yang dihapus tidak bisa dikembalikan!",
-            //     type: 'warning',
-            //     showCancelButton: true,
-            //     confirmButtonColor: '#3085d6',
-            //     cancelButtonColor: '#d33',
-            //     confirmButtonText: 'Hapus'
-            // }).then((result) => {
-            //     if (result.value) {
-            //         return form.submit();
-            //     }
-            // })
         });
+
+        // $('.form-confirm-payment').on('submit', function(e){
+        //     var form = this;
+        //     e.preventDefault();
+
+        //     swal({
+        //         title: "Apakah Anda Yakin?",
+        //         text: "Anda Akan Mengkonfirmasi Pembayaran Formulir. Setelah dikonfirmasi, user ini dapat mengisi biodata.",
+        //         icon: "info",
+        //         buttons: true,
+        //         })
+        //         .then((proses) => {
+        //         if (proses) {
+        //             return form.submit();
+        //         } 
+        //     });
+        // });
 </script>
 
 

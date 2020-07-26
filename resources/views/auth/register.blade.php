@@ -3,6 +3,9 @@
 @section('judul', 'Pendaftaran Calon Peserta Didik')
 @section('konten')
 <div class="register-form">
+    @if($gelombang->id_gelombang === 1)
+    <p>Mohon Maaf, Saat Ini Pendaftaran Peserta Didik Baru Sudah Ditutup. Sampai Bertemu Pada Gelombang Selanjutnya!</p>
+    @else
     <form action="{{ route('register') }}" method="post">
         @csrf
         <div class="form-group">
@@ -51,9 +54,10 @@
             @enderror
         </div>
         <button type="submit" name="submit" id="submit" class="btn btn-dark float-right">Daftar!</button>
-        <p style="clear: both" class="text-left">Sudah Punya Akun? Masuk <a href="{{ route('login') }}"
-                class="badge badge-dark">disini!</a></p>
-        <p style="clear: both" class="text-center"><a href="{{ route('forgot') }}">Lupa Password?</a></p>
     </form>
+    @endif
+    <p style="clear: both" class="text-left">Sudah Punya Akun? Masuk <a href="{{ route('login') }}"
+            class="badge badge-dark">disini!</a></p>
+    <p style="clear: both" class="text-center"><a href="{{ route('forgot') }}">Lupa Password?</a></p>
 </div>
 @endsection

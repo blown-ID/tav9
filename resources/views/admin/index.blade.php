@@ -16,7 +16,7 @@ use App\Role;
                 <i class="fas fa-users"></i>
             </div>
             <a href="{{ route('mgtSMP.index') }}" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
+                Info <i class="fas fa-arrow-circle-right"></i>
             </a>
         </div>
     </div>
@@ -30,7 +30,7 @@ use App\Role;
                 <i class="fas fa-users"></i>
             </div>
             <a href="#" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
+                Info <i class="fas fa-arrow-circle-right"></i>
             </a>
         </div>
     </div>
@@ -44,7 +44,7 @@ use App\Role;
                 <i class="fas fa-users"></i>
             </div>
             <a href="#" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
+                Info <i class="fas fa-arrow-circle-right"></i>
             </a>
         </div>
     </div>
@@ -52,17 +52,47 @@ use App\Role;
         <div class="small-box bg-orange">
             <div class="inner text-white">
                 <h3>{{ $bb }}</h3>
-                <p>Belum Bayar Pendaftaran</p>
+                <p>Pembayaran Belum Dikonfirmasi</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+            <a href="{{ route('biaya.index') }}" class="small-box-footer">
+                <span class="text-white">Info</span> <i class="fas fa-arrow-circle-right text-white"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 col-6">
+        <div class="small-box bg-olive">
+            <div class="inner">
+                <h3>{{ $isCompleted }}</h3>
+                <p>Siswa Yang Sudah Membayar > 50% Biaya per {{ date('d-m-Y') }}</p>
             </div>
             <div class="icon">
                 <i class="fas fa-users"></i>
             </div>
-            <a href="#" class="small-box-footer">
-                <span class="text-white">More info</span> <i class="fas fa-arrow-circle-right text-white"></i>
+            <a href="{{ route('laporan_is_completed') }}" class="small-box-footer">
+                Unduh Data <i class="fas fa-arrow-circle-down"></i>
             </a>
         </div>
     </div>
-
+    <div class="col-lg-6 col-6">
+        <div class="small-box bg-purple">
+            <div class="inner">
+                <h3>Rp. {{ number_format($sumPayment) }}</h3>
+                <p>Akumulasi Pembayaran per {{ date('d-m-Y') }}</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <a href="{{ route('biaya.laporan_pembayaran') }}" class="small-box-footer">
+                Unduh Data <i class="fas fa-arrow-circle-down"></i>
+            </a>
+        </div>
+    </div>
 </div>
 <div class="row">
     <div class="col-md-7 grid-margin stretch-card">
@@ -128,7 +158,7 @@ use App\Role;
         {
           label: "Population (millions)",
           backgroundColor: ["#6c757d", "#28a745","#dc3545"],
-          data: [38,131,21]
+          data: {!! json_encode($piechart) !!}
         }
       ]
     },
@@ -162,7 +192,7 @@ use App\Role;
                 <i class="fas fa-users"></i>
             </div>
             <a href="{{ route('mgtSMP.index') }}" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
+                Info <i class="fas fa-arrow-circle-right"></i>
             </a>
         </div>
     </div>

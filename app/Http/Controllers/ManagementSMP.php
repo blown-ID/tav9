@@ -367,6 +367,7 @@ class ManagementSMP extends Controller
             'seragam' => 'required|in:S,M,L,XL,XXL',
         ], $messages);
         $user = User::where('id_user', $id)->first();
+        $gelombang = Gelombang::where('nama_gelombang', $user->dgk)->first();
         $cek_siswa = Detail_Siswa::where('id_siswa', $id)->count();
         $cek_ortu = Orangtua::where('id_ortu', $id)->count();
         // dd($cek_siswa);
@@ -400,6 +401,15 @@ class ManagementSMP extends Controller
                     'seragam' => $request->seragam
                 ]
             );
+            if ($average >= $gelombang->nilai_lulus) {
+                User::where('id_user', $id)->update([
+                    'is_lulus' => 1
+                ]);
+            } else {
+                User::where('id_user', $id)->update([
+                    'is_lulus' => 2
+                ]);
+            }
             return redirect(route('mgtSMP.show', $id))->with('success', 'Data Nilai Sudah Berhasil Diperbarui!');
         } else {
             $score = Nilai::firstOrCreate(

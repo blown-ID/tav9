@@ -14,6 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PDF;
 use Spatie\Permission\Models\Role;
+use Excel;
+use App\Exports\IsCompletedExport;
+use App\Payment_detail;
 
 class HomeController extends Controller
 {
@@ -58,9 +61,15 @@ class HomeController extends Controller
             $jsmp = User::where('role_id', 1)->count();
             $jsma = User::where('role_id', 2)->count();
             $jsmk = User::where('role_id', 3)->count();
-            $bb = User::where('bayar_pendaftaran', 0)->count();
+            $bb = count(Payments::where('verified', 0)->get());
+            $isCompleted = count(User::where('is_completed', 1)->get());
+            $sumPayment = Payment_detail::sum('price');
+            $menunggu = DB::select('SELECT COUNT("menunggu") AS menunggu FROM users u WHERE u.is_lulus = 0 AND (role_id = 1 OR role_id = 2 OR role_id = 3)');
+            $lulus = DB::select('SELECT COUNT("lulus") AS lulus FROM users u WHERE u.is_lulus = 1 AND (role_id = 1 OR role_id = 2 OR role_id = 3)');
+            $tidak_lulus = DB::select('SELECT COUNT("tidak_lulus") AS tidak_lulus FROM users u WHERE u.is_lulus = 2 AND (role_id = 1 OR role_id = 2 OR role_id = 3)');
             $jumlah = [$jsmp, $jsma, $jsmk];
-            return view('admin.index', compact('jumlah', 'judul', 'bb'));
+            $piechart = [$menunggu[0]->menunggu, $lulus[0]->lulus, $tidak_lulus[0]->tidak_lulus];
+            return view('admin.index', compact('jumlah', 'judul', 'bb', 'piechart', 'isCompleted', 'sumPayment'));
         }
         // dd(Auth::user());
     }
@@ -170,7 +179,7 @@ class HomeController extends Controller
     public function information()
     {
         $judul = "Informasi Kelulusan";
-        $gelombang = Gelombang::first();
+        $gelombang = Gelombang::where('id_gelombang', Auth::user()->dgk)->first();
         $setting = Setting::first();
         $tanggal = strtotime($gelombang->tgl_ujian);
         $validasi = date('d F Y', strtotime("+2 weeks", $tanggal));
@@ -194,5 +203,11 @@ class HomeController extends Controller
         $seragam = Item::where('id_jenjang', $role)->where('nama_item', 'like', "%Seragam%")->get();
         // dd($seragam);
         return view('information.rincian_biaya', compact('item', 'judul', 'seragam'));
+    }
+
+    public function laporan_is_completed()
+    {
+        $tanggal = date('d-m-Y');
+        return Excel::download(new IsCompletedExport, "Laporan Siswa Baru $tanggal.xlsx");
     }
 }

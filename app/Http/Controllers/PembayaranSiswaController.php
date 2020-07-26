@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Payments;
+use App\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Traits\HasRoles;
 
 class PembayaranSiswaController extends Controller
 {
+    use HasRoles;
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +19,10 @@ class PembayaranSiswaController extends Controller
      */
     public function index()
     {
-        $judul = "Pembayaran Siswa";
+        $judul = "Data Pembayaran";
+        $setting = Setting::first();
         $payments = Payments::where('id_siswa', Auth::user()->id_user)->get();
-        return view('pembayaransiswa.index', compact('judul', 'payments'));
+        return view('pembayaransiswa.index', compact('judul', 'payments', 'setting'));
     }
 
     /**
@@ -82,13 +86,13 @@ class PembayaranSiswaController extends Controller
             DB::table('payment')->insert([
                 'id_siswa' => Auth::user()->id_user,
                 'nama_siswa' => Auth::user()->nama,
-                'role_siswa' => Auth::user()->role_id,
+                'role_siswa' => Auth::user()->getRoleNames()->first(),
                 'id_invoice' => $id_invoice,
                 'note' => $request->note,
                 'date' => $request->tanggal,
                 'from_rek' => $request->from_rek,
                 'from_name' => $request->nama_pengirim,
-                'from_bank_name' => $request->nama_pengirim,
+                'from_bank_name' => $request->nama_bank,
                 'verified' => 0,
                 'bukti' => $namaFile,
             ]);
@@ -142,5 +146,9 @@ class PembayaranSiswaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function print($id)
+    {
     }
 }

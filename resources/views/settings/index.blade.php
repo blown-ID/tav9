@@ -69,8 +69,14 @@
                         @forelse ($gelombang as $gelombang)
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
+                            @if ($gelombang->id_gelombang === 1)
+                            <td>Tutup Pendaftaran</td>
+                            @else
                             <td>Gelombang Ke-{{ $gelombang->nama_gelombang }}</td>
-                            <td>{{ date('d F Y', strtotime($gelombang->tgl_ujian)) }}</td>
+                            @endif
+                            <td>@if($gelombang->tgl_ujian) {{ date('d F Y', strtotime($gelombang->tgl_ujian)) }} @else -
+                                @endif
+                            </td>
                             <td>{{ $gelombang->nilai_lulus }}</td>
                             <td>
                                 @if ($gelombang->active === 1)
@@ -142,6 +148,11 @@
                         <label for="cp_smk">Kontak Admin SMK</label>
                         <input type="text" name="cp_smk" class="form-control" id="cp_smk" value="{{ $setting->cp_smk }}"
                             placeholder="Masukkan No. HP Admin SMK">
+                    </div>
+                    <div class="form-group">
+                        <label for="cp_keuangan">Kontak Keuangan</label>
+                        <input type="text" name="cp_keuangan" class="form-control" id="cp_keuangan"
+                            value="{{ $setting->cp_keuangan }}" placeholder="Masukkan No. HP Admin SMK">
                     </div>
             </div>
             <div class="modal-footer">

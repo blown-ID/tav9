@@ -143,6 +143,9 @@
                         </select>
                     </div>
                     <p>Rata Rata Nilai: {{ $nilai->rata ?? '-' }}</p>
+                    <p>Gelombang: {{ $user->dgk }}. Status Lulus: @if($user->is_lulus === 1) "Lulus"
+                        @elseif($user->is_lulus === 2)
+                        Tidak Lulus @else Menunggu Nilai... @endif</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

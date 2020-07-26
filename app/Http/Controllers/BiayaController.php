@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Auth;
 use PDF;
+use Excel;
+use App\Exports\PaymentsExport;
 
 
 class BiayaController extends Controller
@@ -133,6 +135,7 @@ class BiayaController extends Controller
     public function edit($id)
     {
         // $payment = DB::select('SELECT * FROM payment LEFT JOIN payment_detail ON payment.id_payment = payment_detail.id_payment LEFT JOIN users ON payment.id_siswa = users.id_user LEFT JOIN detail_siswa ON detail_siswa.id_siswa = payment.id_siswa LEFT JOIN item ON item.id_item = payment_detail.id_item', [1]);
+        $payment = Payments::where('id_payment', $id)->update(['verified' => 1, 'verified_by' => Auth::user()->nama]);
         $payment_detail = DB::select("SELECT * FROM payment_detail LEFT JOIN item ON item.id_item = payment_detail.id_item WHERE id_payment = $id", [1]);
         // dd($payment_detail);
         $payment = Payments::where('id_payment', $id)->first();
@@ -149,6 +152,12 @@ class BiayaController extends Controller
         $total = DB::select("SELECT SUM(price) AS total FROM payment_detail WHERE id_payment = $id", [1]);
         $judul = "Pembuatan Nota";
         return view('biaya.edit', compact('judul', 'payment_detail', 'user', 'setting', 'payment', 'item', 'role_name', 'total'));
+    }
+
+    public function validatePayment($id)
+    {
+        $payment = Payments::where('id_payment', $id)->update(['verified' => 1, 'verified_by' => Auth::user()->nama]);
+        return redirect()->route('biaya.edit', ['biaya' => $id])->with('success', 'Data Pembayaran sudah tervalidasi. Silahkan memasukkan detail pembayaran.');
     }
 
     /**
@@ -213,12 +222,31 @@ class BiayaController extends Controller
             // Kalau formulir yang ditambah, atur status bayarnya menjadi 1
             $update_user = User::where('id_user', $payment->id_siswa)->update(['bayar_pendaftaran' => 1]);
         };
+        $this->_validasiCompleted($siswa->id_user);
         return redirect()->back()->with('success', 'Pembayaran Sudah Berhasil Ditambahkan!');
+    }
+
+    private function _validasiCompleted($id_siswa)
+    {
+        // dd($id_siswa);
+        $siswa = User::where('id_user', $id_siswa)->first();
+        // dd($role);
+        $queryGetTotalPembayaranUser = DB::select("SELECT SUM(price) AS price FROM payment p INNER JOIN payment_detail pd ON p.id_payment = pd.id_payment WHERE id_siswa = $id_siswa GROUP by id_siswa");
+        $queryGetSubtotalItem = DB::select("SELECT SUM(price) as subtotal FROM item i WHERE id_jenjang = $siswa->role_id AND i.nama_item NOT LIKE '%akhwat%'");
+        $getTotalPembayaranUser = $queryGetTotalPembayaranUser[0]->price;
+        $getHalfSubtotalItem = $queryGetSubtotalItem[0]->subtotal / 2;
+        if ($getTotalPembayaranUser >= $getHalfSubtotalItem) {
+            User::where('id_user', $id_siswa)->update(['is_completed' => 1]);
+        } else {
+            User::where('id_user', $id_siswa)->update(['is_completed' => 0]);
+        }
     }
 
     public function delete_detail($id)
     {
         $apaan = Payment_detail::where('id_payment_detail', $id)->first();
+        $getPayment = Payments::where('id_payment', $apaan->id_payment)->first();
+        $siswa = User::where('id_user', $getPayment->id_siswa)->first();
         $nama_item = Item::where('id_item', $apaan->id_item)->first('nama_item');
         // dd($nama_item->nama_item);
         if (strpos($nama_item->nama_item, 'Formulir') !== false) {
@@ -229,6 +257,7 @@ class BiayaController extends Controller
         } else {
             $delete = Payment_detail::where('id_payment_detail', $id)->delete();
         };
+        $this->_validasiCompleted($siswa->id_user);
         return redirect()->back()->with('success', 'Data Sudah Berhasil Dihapus!');
     }
 
@@ -260,7 +289,12 @@ class BiayaController extends Controller
         $total = DB::select("SELECT SUM(price) AS total FROM payment_detail WHERE id_payment = $id_payment", [1]);
         $judul = "Nota Pembayaran $user->nama";
         $pdf = PDF::loadview('biaya.printpayment', compact('judul', 'payment', 'payment_detail', 'user', 'setting', 'role_name', 'total'));
-        // return $pdf->download('Kartu Tes ' . $user->nama . '.pdf');
-        return $pdf->stream();
+        return $pdf->download('Nota Pembayaran ' . $user->nama . '.pdf');
+        // return $pdf->stream();
+    }
+    public function laporan_pembayaran()
+    {
+        $tanggal = date('d-m-Y');
+        return Excel::download(new PaymentsExport, "Laporan Pembayaran Per-Tanggal $tanggal.xlsx");
     }
 }

@@ -47,8 +47,9 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
         $judul = "Pendaftaran Baru Calon Peserta Didik";
+        $gelombang = Gelombang::where('active', 1)->first();
         $role = Role::where('name', 'not like', "%Admin%")->get();
-        return view('auth.register', compact('role', 'judul'));
+        return view('auth.register', compact('role', 'judul', 'gelombang'));
     }
 
     /**

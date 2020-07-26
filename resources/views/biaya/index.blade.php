@@ -11,6 +11,7 @@
                     <th scope="col">Nama Siswa</th>
                     <th scope="col">Tanggal</th>
                     <th scope="col">Note</th>
+                    <th scope="col">Bukti Transfer</th>
                     <th scope="col">Divalidasi Oleh</th>
                     <th scope="col">Aksi</th>
                 </tr>
@@ -23,17 +24,32 @@
                     <td>{{ $payment->nama_siswa }} ({{ $payment->role_siswa }})</td>
                     <td>{{ date('d F Y', strtotime($payment->date)) }}</td>
                     <td>{{ $payment->note }}</td>
+                    <td>
+                        <a href="{{ asset('assets/images/bukti_transfer/') }}/{{ $payment->bukti }}"
+                            data-toggle="lightbox" data-gallery="gallery">
+                            <img src="{{ asset('assets/images/bukti_transfer/') }}/{{ $payment->bukti }}"
+                                class="imggallery">
+                        </a>
+                    </td>
                     <td>@if($payment->verified_by){{ $payment->verified_by }}@else Belum Divalidasi @endif</td>
                     <td>
+                        @if ($payment->verified ===1)
                         <a href="{{ route('biaya.print', ['id'=>$payment->id_payment]) }}"
-                            class="badge bg-purple">Print</a>
+                            class="badge bg-purple">Detail</a>
                         <a href="{{ route('biaya.edit', ['biaya'=>$payment->id_payment]) }}"
-                            class="badge badge-info">Detail</a>
+                            class="badge badge-info">Edit Pembayaran</a>
+                        @else
+                        @php
+                        $pesan = "Apakah Anda Yakin Ingin Memvalidasi Pembayaran User $payment->nama_siswa?"
+                        @endphp
+                        <a href="{{ route('biaya.validatePayment', ['biaya'=>$payment->id_payment]) }}"
+                            class="badge bg-fuchsia" onclick='return confirm("{{$pesan}}")'>Validasikan Pembayaran</a>
+                        @endif
                         <form action="{{ route('biaya.destroy', ['biaya'=>$payment->id_payment]) }}" method="POST"
                             class="d-inline form-delete">
                             @method('delete')
                             @csrf
-                            <button type="submit" class="btn btn-xs btn-danger">Hapus</button>
+                            <button type="submit" class="badge badge-danger">Hapus</button>
                         </form>
                     </td>
                 </tr>
@@ -77,5 +93,12 @@
                 } 
             });
         });
+</script>
+
+<script>
+    $(document).on("click", '[data-toggle="lightbox"]', function(event){
+      event.preventDefault();
+      $(this).ekkoLightbox();
+    });
 </script>
 @endsection
