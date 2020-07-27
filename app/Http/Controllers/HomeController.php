@@ -170,7 +170,7 @@ class HomeController extends Controller
         $user = User::where('id_user', Auth::user()->id_user)->first();
         $siswa = Detail_Siswa::where('id_user', Auth::user()->id_user)->first();
         $settings = Setting::first();
-        $gelombang = Gelombang::where('id_gelombang', Auth::user()->dgk)->first();
+        $gelombang = Gelombang::where('nama_gelombang', Auth::user()->dgk)->first();
         $pdf = PDF::loadview('biodata.kartuUjian', compact('user', 'siswa', 'settings', 'gelombang'));
         return $pdf->download('Kartu Tes ' . $user->nama . '.pdf');
         // return $pdf->stream();
@@ -179,7 +179,7 @@ class HomeController extends Controller
     public function information()
     {
         $judul = "Informasi Kelulusan";
-        $gelombang = Gelombang::where('id_gelombang', Auth::user()->dgk)->first();
+        $gelombang = Gelombang::where('nama_gelombang', Auth::user()->dgk)->first();
         $setting = Setting::first();
         $tanggal = strtotime($gelombang->tgl_ujian);
         $validasi = date('d F Y', strtotime("+2 weeks", $tanggal));

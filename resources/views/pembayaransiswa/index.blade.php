@@ -64,7 +64,8 @@
                         <div class="form-group">
                             <label for="note">Catatan</label>
                             <input type="text" class="form-control @error('note') is-invalid @enderror"
-                                placeholder="Masukkan Catatan" name="note" value="{{ old('note') }}" id="note">
+                                placeholder="contoh: Pembayaran Biaya SPP dan Seragam" name="note"
+                                value="{{ old('note') }}" id="note">
                             @error('note')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -72,7 +73,8 @@
                         <div class="form-group">
                             <label for="bukti">Bukti Transfer</label>
                             <div class="custom-file">
-                                <input type="file" name="image" id="image" class="custom-file-input">
+                                <input type="file" name="image" id="image" class="custom-file-input"
+                                    accept="image/png,image/jpeg">
                                 <label for="image" class="custom-file-label">Pilih Gambar</label>
                                 @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>

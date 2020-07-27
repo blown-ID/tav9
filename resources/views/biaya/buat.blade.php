@@ -51,7 +51,7 @@
             <label for="bukti" class="col-sm-2 col-form-label">Bukti Pembayaran</label>
             <div class="col-sm-10">
                 <div class="custom-file">
-                    <input type="file" name="bukti" id="bukti" class="custom-file-input">
+                    <input type="file" name="bukti" id="bukti" class="custom-file-input" accept="image/png,image/jpeg">
                     <label for="bukti" class="custom-file-label">Pilih Gambar</label>
                     @error('bukti')
                     <div class="alert alert-danger">{{ $message }}</div>

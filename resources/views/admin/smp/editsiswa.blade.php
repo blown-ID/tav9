@@ -37,8 +37,9 @@ $idx = $user->id_user;
                     <tr>
                         <td>
                             NISN
-                            <a href="https://nisn.data.kemdikbud.go.id/" target="_blank"><i
-                                    class="fa fa-question-circle" data-toggle="tooltip" data-placement="right"
+                            <a href="https://referensi.data.kemdikbud.go.id/nisn/index.php/Cindex/formcaribynama"
+                                target="_blank"><i class="fa fa-question-circle" data-toggle="tooltip"
+                                    data-placement="right"
                                     title="Untuk melihat NISN bisa dilihat di Raport Siswa atau Melalui Link Berikut."></i></a>
                         </td>
                         <td>

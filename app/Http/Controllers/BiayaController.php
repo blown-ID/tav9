@@ -231,8 +231,9 @@ class BiayaController extends Controller
         // dd($id_siswa);
         $siswa = User::where('id_user', $id_siswa)->first();
         // dd($role);
-        $queryGetTotalPembayaranUser = DB::select("SELECT SUM(price) AS price FROM payment p INNER JOIN payment_detail pd ON p.id_payment = pd.id_payment WHERE id_siswa = $id_siswa GROUP by id_siswa");
+        $queryGetTotalPembayaranUser = DB::select("SELECT SUM(price) AS price FROM payment p LEFT JOIN payment_detail pd ON p.id_payment = pd.id_payment WHERE id_siswa = $id_siswa GROUP by id_siswa");
         $queryGetSubtotalItem = DB::select("SELECT SUM(price) as subtotal FROM item i WHERE id_jenjang = $siswa->role_id AND i.nama_item NOT LIKE '%akhwat%'");
+        // dd($apaan);
         $getTotalPembayaranUser = $queryGetTotalPembayaranUser[0]->price;
         $getHalfSubtotalItem = $queryGetSubtotalItem[0]->subtotal / 2;
         if ($getTotalPembayaranUser >= $getHalfSubtotalItem) {

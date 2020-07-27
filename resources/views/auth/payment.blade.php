@@ -207,7 +207,8 @@ $item = Item::where('id_jenjang', Auth::user()->role_id)->where('nama_item', 'Fo
                         <div class="form-group">
                             <label for="bukti">Bukti Pembayaran<span class="text-danger">*</span></label>
                             <div class="custom-file">
-                                <input type="file" name="bukti" id="bukti" class="custom-file-input">
+                                <input type="file" name="bukti" id="bukti" class="custom-file-input"
+                                    accept="image/png,image/jpeg">
                                 <label for="bukti" class="custom-file-label">Pilih Gambar</label>
                                 @error('bukti')
                                 <small class="text-danger">{{ $message }}</small>
@@ -219,8 +220,8 @@ $item = Item::where('id_jenjang', Auth::user()->role_id)->where('nama_item', 'Fo
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>

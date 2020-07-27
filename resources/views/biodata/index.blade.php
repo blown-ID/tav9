@@ -37,6 +37,10 @@ $asal = "SMP";
                 </tr>
                 @endrole
                 <tr>
+                    <td>Email</td>
+                    <td>{{ Auth::user()->email ?? '' }}</td>
+                </tr>
+                <tr>
                     <td>No. Pendaftaran</td>
                     <td>{{ $siswa->no_daftar ?? '' }}</td>
                 </tr>

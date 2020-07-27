@@ -27,6 +27,10 @@
                 </td>
             </tr>
             <tr>
+                <td>Email</td>
+                <td>{{ $user->email ?? '' }}</td>
+            </tr>
+            <tr>
                 <td>No. Pendaftaran</td>
                 <td>{{ $siswa->no_daftar ?? '' }}</td>
             </tr>

@@ -425,6 +425,15 @@ class ManagementSMP extends Controller
                     'seragam' => $request->seragam
                 ]
             );
+            if ($average >= $gelombang->nilai_lulus) {
+                User::where('id_user', $id)->update([
+                    'is_lulus' => 1
+                ]);
+            } else {
+                User::where('id_user', $id)->update([
+                    'is_lulus' => 2
+                ]);
+            }
             return redirect(route('mgtSMP.show', $id))->with('success', 'Data Nilai Sudah Berhasil Disimpan!');
         }
     }

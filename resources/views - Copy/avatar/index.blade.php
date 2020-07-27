@@ -28,7 +28,8 @@
                 </div>
                 <div class="col-sm-9">
                     <div class="custom-file">
-                        <input type="file" name="image" id="image" class="custom-file-input">
+                        <input type="file" name="image" id="image" class="custom-file-input"
+                            accept="image/png,image/jpeg">
                         <label for="image" class="custom-file-label">Pilih Gambar</label>
                         @error('image')
                         <div class="alert alert-danger">{{ $message }}</div>
